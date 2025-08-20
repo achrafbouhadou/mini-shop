@@ -11,4 +11,8 @@ public class Order : BaseEntity
     public Customer? Customer { get; set; }
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
+
+    public long AmountTotalCents { get; set; }      
+    public string Currency { get; set; } = "usd";   
+    public string? StripeSessionId { get; set; } 
 }

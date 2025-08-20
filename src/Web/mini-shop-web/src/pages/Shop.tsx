@@ -3,12 +3,15 @@ import Layout from '../components/Layout'
 import { useProducts } from '../hooks/useProducts'
 import { Plus } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
+import { createCheckoutSession } from '../lib/checkout'
 
 export default function Shop() {
   const [page, setPage] = useState(1)
   const { data, isFetching } = useProducts({ page, pageSize: 12, activeOnly: true })
   const [cart, setCart] = useState<Record<string, number>>({})
-
+    // compute total (client-side) from loaded page items
+    const totalCents = (data?.items ?? []).reduce((sum, p) => sum + (cart[p.id] ?? 0) * Math.round(p.price * 100), 0)
+    const totalCount = Object.values(cart).reduce((a,b)=>a+b,0)
   const addToCart = (id: string) => setCart(c => ({ ...c, [id]: (c[id] ?? 0) + 1 }))
 
   return (
@@ -22,6 +25,23 @@ export default function Shop() {
         {(data?.items ?? []).map(p => (
             <ProductCard key={p.id} p={p} onAdd={addToCart} />
         ))}
+    </div>
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[min(960px,92vw)]">
+    <div className="bg-white border rounded-2xl shadow-lg p-4 flex items-center justify-between">
+        <div className="text-sm text-slate-600">
+        <strong>{totalCount}</strong> items · <strong>${(totalCents/100).toFixed(2)}</strong>
+        </div>
+        <button
+        disabled={totalCount === 0}
+        className="inline-flex items-center rounded-xl bg-blue-600 text-white text-sm px-4 py-2 disabled:opacity-50"
+        onClick={async () => {
+            const { url } = await createCheckoutSession(cart)
+            window.location.href = url
+        }}
+        >
+        Checkout
+        </button>
+    </div>
     </div>
 
       {/* Simple pager */}

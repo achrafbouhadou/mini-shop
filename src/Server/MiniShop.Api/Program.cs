@@ -33,6 +33,12 @@ app.UseSerilogRequestLogging();
 
 if (app.Environment.IsDevelopment())
 {
+    app.MapGet("/debug/stripe", (IConfiguration cfg) =>
+    {
+        var hasKey = !string.IsNullOrWhiteSpace(cfg["Stripe:SecretKey"]);
+        var hasWebhook = !string.IsNullOrWhiteSpace(cfg["Stripe:WebhookSecret"]);
+        return Results.Ok(new { secretLoaded = hasKey, webhookLoaded = hasWebhook });
+    }).ExcludeFromDescription();
     app.UseSwagger();
     app.UseSwaggerUI();
 
@@ -61,5 +67,7 @@ app.MapGet("/api/categories", async (AppDbContext db) =>
 }).WithTags("Categories");
 
 app.MapProductEndpoints();
+app.MapCheckoutEndpoints();
+app.MapStripeWebhook();
 
 await app.RunAsync();
