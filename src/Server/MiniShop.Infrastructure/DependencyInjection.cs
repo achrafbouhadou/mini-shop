@@ -16,6 +16,8 @@ public static class DependencyInjection
         services.AddDbContext<AppDbContext>(opt =>
             opt.UseNpgsql(cs, npg => npg.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName))
                .UseSnakeCaseNamingConvention()); 
+               
+        services.AddScoped<IProductRepository, ProductRepository>();
 
         return services;
     }

@@ -21,6 +21,9 @@ builder.Services.AddCors(options =>
 // >>> Add Infrastructure (DbContext)
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddValidatorsFromAssemblyContaining<CreateProductValidator>();
+
+
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
