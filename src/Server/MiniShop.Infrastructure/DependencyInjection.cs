@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MiniShop.Infrastructure.Persistence;
+using MiniShop.Application.Products;
+using MiniShop.Infrastructure.Persistence.Repositories;
 using Npgsql;
 
 namespace MiniShop.Infrastructure;

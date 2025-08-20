@@ -2,6 +2,9 @@ using Serilog;
 using MiniShop.Infrastructure;
 using MiniShop.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation;
+using MiniShop.Api.Endpoints;
+using MiniShop.Application.Products;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,13 +50,16 @@ app.MapGet("/healthz", () => Results.Ok(new { status = "OK", time = DateTimeOffs
    .WithName("Health")
    .WithTags("System");
 
-app.MapGet("/api/products", async (AppDbContext db) =>
+app.MapGet("/api/categories", async (AppDbContext db) =>
 {
-    var list = await db.Products
-        .OrderBy(p => p.Name)
-        .Select(p => new { p.Id, p.Name, p.Sku, p.Price })
+    var cats = await db.Categories
+        .AsNoTracking()
+        .OrderBy(c => c.Name)
+        .Select(c => new { c.Id, c.Name })
         .ToListAsync();
-    return Results.Ok(list);
-}).WithTags("Products");
+    return Results.Ok(cats);
+}).WithTags("Categories");
+
+app.MapProductEndpoints();
 
 await app.RunAsync();
