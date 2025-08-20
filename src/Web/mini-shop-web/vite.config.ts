@@ -6,7 +6,7 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/healthz': 'http://localhost:5173'
+      '/healthz': 'http://localhost:5180'
     }
   }
 })
