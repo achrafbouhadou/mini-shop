@@ -49,30 +49,30 @@ export default function ProductForm({
         >
         <label className="grid gap-1">
             <span className="text-sm text-slate-600">Name</span>
-            <input className="h-10 rounded-xl border px-3 bg-white" {...register('name')} />
+            <input className="h-10 rounded-xl border px-3 bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" {...register('name')} />
             {errors.name && <small className="text-red-600">{errors.name.message}</small>}
         </label>
 
         <label className="grid gap-1">
             <span className="text-sm text-slate-600">SKU</span>
-            <input className="h-10 rounded-xl border px-3 bg-white" {...register('sku')} />
+            <input className="h-10 rounded-xl border px-3 bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" {...register('sku')} />
             {errors.sku && <small className="text-red-600">{errors.sku.message}</small>}
         </label>
 
         <label className="grid gap-1">
             <span className="text-sm text-slate-600">Price</span>
-            <input type="number" step="0.01" className="h-10 rounded-xl border px-3 bg-white" {...register('price', { valueAsNumber: true })} />
+            <input type="number" step="0.01" className="h-10 rounded-xl border px-3 bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" {...register('price', { valueAsNumber: true })} />
             {errors.price && <small className="text-red-600">{errors.price.message}</small>}
         </label>
 
         <label className="grid gap-1">
             <span className="text-sm text-slate-600">Description</span>
-            <textarea rows={3} className="rounded-xl border px-3 py-2 bg-white" {...register('description')} />
+            <textarea rows={3} className="rounded-xl border px-3 py-2 bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" {...register('description')} />
         </label>
 
         <label className="grid gap-1">
             <span className="text-sm text-slate-600">Category</span>
-            <select className="h-10 rounded-xl border px-3 bg-white" {...register('categoryId')}>
+            <select className="h-10 rounded-xl border px-3 bg-white shadow-sm focus:ring-2 focus:ring-blue-400 focus:outline-none" {...register('categoryId')}>
             <option value="">— Select —</option>
             {categories?.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
@@ -87,8 +87,8 @@ export default function ProductForm({
         )}
 
         <div className="mt-2 flex justify-end gap-2">
-            <button type="button" onClick={onCancel} className="px-4 h-10 rounded-xl border bg-white hover:bg-slate-50">Cancel</button>
-            <button type="submit" className="px-4 h-10 rounded-xl bg-blue-600 text-white hover:bg-blue-700">{mode === 'create' ? 'Create' : 'Save'}</button>
+            <button type="button" onClick={onCancel} className="px-4 h-10 rounded-xl border bg-white hover:bg-slate-50 transition-base">Cancel</button>
+            <button type="submit" className="px-4 h-10 rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-sm transition-base">{mode === 'create' ? 'Create' : 'Save'}</button>
         </div>
         </form>
     )

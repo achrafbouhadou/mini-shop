@@ -17,37 +17,37 @@ export default function Shop() {
   return (
     <Layout cartCount={Object.values(cart).reduce((a,b)=>a+b,0)}>
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Featured Products</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">Featured Products</h1>
         <span className="text-sm text-slate-500">{isFetching ? 'Loading…' : `Total: ${data?.totalCount ?? 0}`}</span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {(data?.items ?? []).map(p => (
             <ProductCard key={p.id} p={p} onAdd={addToCart} />
         ))}
     </div>
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[min(960px,92vw)]">
-    <div className="bg-white border rounded-2xl shadow-lg p-4 flex items-center justify-between">
-        <div className="text-sm text-slate-600">
-        <strong>{totalCount}</strong> items · <strong>${(totalCents/100).toFixed(2)}</strong>
+      <div className="bg-white/95 backdrop-blur border rounded-2xl shadow-xl p-4 flex items-center justify-between">
+        <div className="text-sm text-slate-700">
+          <strong>{totalCount}</strong> items · <strong>${(totalCents/100).toFixed(2)}</strong>
         </div>
         <button
-        disabled={totalCount === 0}
-        className="inline-flex items-center rounded-xl bg-blue-600 text-white text-sm px-4 py-2 disabled:opacity-50"
-        onClick={async () => {
+          disabled={totalCount === 0}
+          className="inline-flex items-center rounded-xl bg-blue-600 text-white text-sm px-4 py-2 disabled:opacity-50 hover:bg-blue-700 transition-base"
+          onClick={async () => {
             const { url } = await createCheckoutSession(cart)
             window.location.href = url
-        }}
+          }}
         >
-        Checkout
+          Checkout
         </button>
-    </div>
+      </div>
     </div>
 
       {/* Simple pager */}
       <div className="mt-8 flex justify-center">
         <button
-          className="px-4 py-2 rounded-xl border bg-white hover:bg-slate-50"
+          className="px-4 py-2 rounded-xl border bg-white hover:bg-slate-50 transition-base"
           onClick={() => setPage(p => p + 1)}
           disabled={(data?.items?.length ?? 0) === 0}
         >
