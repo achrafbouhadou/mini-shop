@@ -50,6 +50,13 @@ if (app.Environment.IsDevelopment())
     await MiniShop.Infrastructure.Persistence.Seed.DbSeeder.SeedAsync(db);
 }
 
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
 app.UseCors("web");
 
 app.MapGet("/", () => Results.Redirect("/swagger"));

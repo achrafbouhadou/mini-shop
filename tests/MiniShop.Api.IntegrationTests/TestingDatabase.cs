@@ -1,10 +1,8 @@
-using System.Data.Common;
 using Npgsql;
 using Respawn;
 using Testcontainers.PostgreSql;
-using Xunit;
-
-namespace MiniShop.Api.IntegrationTests;
+using Microsoft.EntityFrameworkCore;
+using MiniShop.Infrastructure.Persistence; // AppDbContext
 
 public class TestingDatabase : IAsyncLifetime
 {
@@ -21,8 +19,24 @@ public class TestingDatabase : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
+        // 1) Start test Postgres
         await _pg.StartAsync();
-        await using var conn = new NpgsqlConnection(ConnectionString + ";Include Error Detail=true");
+
+        // 2) Apply EF migrations to create tables
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+                        .UseNpgsql(
+                            ConnectionString + ";Include Error Detail=true",
+                            npg => npg.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName))
+                        .UseSnakeCaseNamingConvention()    
+                        .Options;
+
+        await using (var db = new AppDbContext(options))
+        {
+            await db.Database.MigrateAsync();
+        }
+
+        // 3) Create Respawner now that tables exist
+        await using var conn = new NpgsqlConnection(ConnectionString);
         await conn.OpenAsync();
         _respawner = await Respawner.CreateAsync(conn, new RespawnerOptions
         {
@@ -35,7 +49,8 @@ public class TestingDatabase : IAsyncLifetime
     {
         await using var conn = new NpgsqlConnection(ConnectionString);
         await conn.OpenAsync();
-        if (_respawner != null) await _respawner.ResetAsync(conn);
+        if (_respawner != null)
+            await _respawner.ResetAsync(conn);
     }
 
     public Task DisposeAsync() => _pg.DisposeAsync().AsTask();

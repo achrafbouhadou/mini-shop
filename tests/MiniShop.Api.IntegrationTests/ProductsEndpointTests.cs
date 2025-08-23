@@ -10,15 +10,14 @@ namespace MiniShop.Api.IntegrationTests;
 public class ProductsEndpointTests : IClassFixture<TestingDatabase>
 {
     private readonly TestingDatabase _dbFixture;
-
     public ProductsEndpointTests(TestingDatabase dbFixture) => _dbFixture = dbFixture;
-
-    private CustomWebAppFactory CreateFactory() => new(_dbFixture.ConnectionString);
 
     [Fact]
     public async Task ListProducts_ReturnsSeeded()
     {
-        var factory = CreateFactory();
+        await _dbFixture.ResetAsync();            // ← reset first
+
+        using var factory = new CustomWebAppFactory(_dbFixture.ConnectionString);
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await SeedHelper.SeedProductsAsync(db);
@@ -27,36 +26,30 @@ public class ProductsEndpointTests : IClassFixture<TestingDatabase>
         var res = await client.GetAsync("/api/products?page=1&pageSize=10");
         res.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var body = await res.Content.ReadFromJsonAsync<dynamic>();
-        ((int)body!.GetProperty("totalCount").GetInt32()).Should().BeGreaterOrEqualTo(1);
+        var doc = await res.Content.ReadFromJsonAsync<System.Text.Json.JsonDocument>();
+        var total = doc!.RootElement.GetProperty("totalCount").GetInt32();
+        total.Should().BeGreaterThan(0);
     }
 
     [Fact]
     public async Task CreateProduct_Then_GetById_Works()
     {
-        var factory = CreateFactory();
-        var client = factory.CreateClient();
+        await _dbFixture.ResetAsync();            // ← reset first
 
-        // Need a category first
+        using var factory = new CustomWebAppFactory(_dbFixture.ConnectionString);
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var (cat, _) = await SeedHelper.SeedProductsAsync(db);
 
-            var createPayload = new
-            {
-                name = "New Tee",
-                sku = "TS-NEW-001",
-                price = 17.99m,
-                description = "Nice",
-                categoryId = cat.Id
-            };
+            var client = factory.CreateClient();
+            var createPayload = new { name = "New Tee", sku = "TS-NEW-001", price = 17.99m, description = "Nice", categoryId = cat.Id };
 
             var createRes = await client.PostAsJsonAsync("/api/products", createPayload);
             createRes.StatusCode.Should().Be(HttpStatusCode.Created);
 
-            var created = await createRes.Content.ReadFromJsonAsync<dynamic>();
-            var id = created!.GetProperty("id").GetString();
+            var created = await createRes.Content.ReadFromJsonAsync<System.Text.Json.JsonDocument>();
+            var id = created!.RootElement.GetProperty("id").GetString();
 
             var getRes = await client.GetAsync($"/api/products/{id}");
             getRes.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -66,7 +59,9 @@ public class ProductsEndpointTests : IClassFixture<TestingDatabase>
     [Fact]
     public async Task DuplicateSku_ReturnsConflict()
     {
-        var factory = CreateFactory();
+        await _dbFixture.ResetAsync();            // ← reset first
+
+        using var factory = new CustomWebAppFactory(_dbFixture.ConnectionString);
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var (cat, prods) = await SeedHelper.SeedProductsAsync(db);

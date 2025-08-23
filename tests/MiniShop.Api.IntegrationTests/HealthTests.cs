@@ -12,10 +12,12 @@ public class HealthTests : IClassFixture<TestingDatabase>
     [Fact]
     public async Task Healthz_ReturnsOk()
     {
-        var factory = new CustomWebAppFactory(_db.ConnectionString);
+         await _db.ResetAsync();   
+        using var factory = new CustomWebAppFactory(_db.ConnectionString);
         var client = factory.CreateClient();
 
         var res = await client.GetAsync("/healthz");
         res.StatusCode.Should().Be(HttpStatusCode.OK);
     }
+
 }

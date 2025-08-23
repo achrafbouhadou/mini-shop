@@ -14,7 +14,9 @@ public class CategoriesEndpointTests : IClassFixture<TestingDatabase>
     [Fact]
     public async Task Categories_List_ReturnsOk()
     {
-        var factory = new CustomWebAppFactory(_dbFixture.ConnectionString);
+        await _dbFixture.ResetAsync(); 
+        
+        using var factory = new CustomWebAppFactory(_dbFixture.ConnectionString);
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await SeedHelper.SeedProductsAsync(db);
