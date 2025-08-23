@@ -1,8 +1,10 @@
 import { Link, NavLink } from 'react-router-dom'
 import { ShoppingCart, Store } from 'lucide-react'
-import type { ReactNode } from 'react'
+import { ReactNode } from 'react'
+import { useCart } from '../context/CartContext'
 
 export default function Layout({ children, cartCount = 0 }: { children: ReactNode; cartCount?: number }) {
+  const { count } = useCart()
   return (
     <>
       <header className="sticky top-0 z-10 bg-white/75 backdrop-blur border-b">
@@ -25,14 +27,14 @@ export default function Layout({ children, cartCount = 0 }: { children: ReactNod
                   ? 'text-slate-900 font-medium'
                   : 'text-slate-600 hover:text-slate-900 transition-base'}
             >Admin</NavLink>
-            <div className="relative">
-              <ShoppingCart className="size-5 text-slate-700" />
-              {cartCount > 0 && (
-                <span className="absolute -right-2 -top-2 bg-blue-600 text-white text-[11px] px-1.5 py-0.5 rounded-full shadow-sm">
-                  {cartCount}
+            <Link to="/cart" className="relative">
+              <ShoppingCart className="size-5" />
+              {count > 0 && (
+                <span className="absolute -right-2 -top-2 bg-blue-600 text-white text-[11px] px-1.5 py-0.5 rounded-full">
+                  {count}
                 </span>
               )}
-            </div>
+            </Link>
           </nav>
         </div>
       </header>

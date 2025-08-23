@@ -70,3 +70,16 @@ export function useDeleteProduct() {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['products'] }) }
   })
 }
+
+export function useProductsByIds(ids: string[]) {
+  return useQuery({
+    queryKey: ['products-by-ids', ids.sort().join(',')],
+    queryFn: async () => {
+      if (!ids.length) return []
+      const r = await api.get('/api/products/by-ids', { params: { ids: ids.join(',') } })
+      return r.data as ProductSummaryDto[]
+    },
+    enabled: ids.length > 0
+  })
+}
+

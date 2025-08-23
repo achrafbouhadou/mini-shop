@@ -6,6 +6,7 @@ using FluentValidation;
 using MiniShop.Api.Endpoints;
 using MiniShop.Application.Products;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Serilog
@@ -65,6 +66,24 @@ app.MapGet("/api/categories", async (AppDbContext db) =>
         .ToListAsync();
     return Results.Ok(cats);
 }).WithTags("Categories");
+
+
+app.MapGet("/api/products/by-ids", async (string ids, AppDbContext db, CancellationToken ct) =>
+{
+    var parsed = ids.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(x => Guid.TryParse(x, out var g) ? g : (Guid?)null)
+                    .Where(g => g.HasValue).Select(g => g!.Value).ToList();
+    if (parsed.Count == 0) return Results.Ok(Array.Empty<object>());
+
+    var list = await db.Products.AsNoTracking()
+        .Where(p => parsed.Contains(p.Id))
+        .OrderBy(p => p.Name)
+        .Select(p => new { p.Id, p.Name, p.Sku, p.Price, p.IsActive })
+        .ToListAsync(ct);
+
+    return Results.Ok(list);
+}).WithTags("Products");
+
 
 app.MapProductEndpoints();
 app.MapCheckoutEndpoints();
