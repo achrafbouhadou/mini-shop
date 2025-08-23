@@ -118,3 +118,5 @@ app.MapCheckoutEndpoints();
 app.MapStripeWebhook();
 
 await app.RunAsync();
+public partial class Program { }
+
