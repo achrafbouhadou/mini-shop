@@ -1,21 +1,18 @@
-import { useEffect, useState } from 'react'
+import { Routes, Route } from 'react-router-dom'
+import Shop from './pages/Shop'
+import AdminProducts from './pages/AdminProducts'
+import Cart from './pages/Cart'
+import Checkout from './pages/Checkout'
+import ThankYou from './pages/ThankYou'
 
-function App() {
-  const [status, setStatus] = useState<string>('checking...')
-
-  useEffect(() => {
-    fetch('/healthz')
-      .then(r => r.json())
-      .then(d => setStatus(d.status ?? 'unknown'))
-      .catch(() => setStatus('offline'))
-  }, [])
-
+export default function App() {
   return (
-    <main style={{ fontFamily: 'Inter, system-ui, sans-serif', padding: 24 }}>
-      <h1>Mini Shop</h1>
-      <p>API health: <strong>{status}</strong></p>
-    </main>
+    <Routes>
+      <Route path="/" element={<Shop />} />
+      <Route path="/admin/products" element={<AdminProducts />} />
+      <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<Checkout />} />
+      <Route path="/thank-you" element={<ThankYou />} />
+    </Routes>
   )
 }
-
-export default App

@@ -1,0 +1,15 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+   "ConnectionStrings": {
+    "Default": "Host=localhost;Port=5432;Database=MiniShopDb;Username=postgres;Password=postgres"
+  },
+   "Stripe": {
+    "SecretKey": "",
+    "WebhookSecret": ""
+  }
+}

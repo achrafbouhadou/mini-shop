@@ -47,3 +47,4 @@ TestResult*/
 artifacts/
 publish/
 wwwroot/dist
+src/Server/MiniShop.Api/appsettings.Development.json
