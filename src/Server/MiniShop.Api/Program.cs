@@ -84,6 +84,34 @@ app.MapGet("/api/products/by-ids", async (string ids, AppDbContext db, Cancellat
     return Results.Ok(list);
 }).WithTags("Products");
 
+app.MapGet("/api/orders/{id:guid}", async (Guid id, AppDbContext db, CancellationToken ct) =>
+{
+    var order = await db.Orders
+        .AsNoTracking()
+        .Include(o => o.Items)
+        .ThenInclude(i => i.Product)
+        .Where(o => o.Id == id)
+        .Select(o => new
+        {
+            o.Id,
+            o.OrderNumber,
+            Status = o.Status.ToString(),
+            o.Currency,
+            o.AmountTotalCents,
+            Items = o.Items.Select(i => new {
+                i.ProductId,
+                ProductName = i.Product != null ? i.Product.Name : null,
+                Sku = i.Product != null ? i.Product.Sku : null,
+                UnitPrice = i.UnitPrice,
+                i.Quantity,
+                Subtotal = i.UnitPrice * i.Quantity
+            }).ToList()
+        })
+        .FirstOrDefaultAsync(ct);
+
+    return order is null ? Results.NotFound() : Results.Ok(order);
+}).WithTags("Orders");
+
 
 app.MapProductEndpoints();
 app.MapCheckoutEndpoints();

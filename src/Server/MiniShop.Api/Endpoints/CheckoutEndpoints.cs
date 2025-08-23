@@ -53,9 +53,9 @@ public static class CheckoutEndpoints
             var secretKey = cfg["Stripe:SecretKey"] ?? throw new InvalidOperationException("Stripe:SecretKey missing");
             StripeConfiguration.ApiKey = secretKey;
 
-            var origin = $"{req.Scheme}://{req.Host}";
-            var successUrl = $"{origin}/?success=1&orderId={order.Id}";
-            var cancelUrl  = $"{origin}/?canceled=1";
+           var origin = req.Headers["Origin"].FirstOrDefault() ?? $"{req.Scheme}://{req.Host}";
+            var successUrl = $"{origin}/thank-you?orderId={order.Id}";
+            var cancelUrl  = $"{origin}/cart?canceled=1";
 
             // Create Stripe Checkout Session
             var lineItems = new List<SessionLineItemOptions>();
