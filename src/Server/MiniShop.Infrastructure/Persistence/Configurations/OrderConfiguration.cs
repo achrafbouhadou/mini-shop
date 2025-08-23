@@ -13,6 +13,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         b.Property(x => x.OrderNumber).IsRequired().HasMaxLength(30);
         b.HasIndex(x => x.OrderNumber).IsUnique();
         b.Property(x => x.Status).HasConversion<string>().HasMaxLength(20);
-        b.HasOne(x => x.Customer).WithMany().HasForeignKey(x => x.CustomerId);
+
+        b.HasOne(x => x.Customer)
+         .WithMany()
+         .HasForeignKey(x => x.CustomerId)
+         .OnDelete(DeleteBehavior.SetNull);
     }
 }

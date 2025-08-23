@@ -31,7 +31,7 @@ public static class CheckoutEndpoints
             var order = new Order
             {
                 OrderNumber = $"ORD-{DateTimeOffset.UtcNow:yyyyMMddHHmmss}-{Random.Shared.Next(100,999)}",
-                CustomerId = Guid.Empty, // guest checkout for now
+                CustomerId = null, // guest checkout
                 Status = OrderStatus.Pending,
                 Currency = "usd",
                 AmountTotalCents = 0
